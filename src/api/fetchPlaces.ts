@@ -1,12 +1,16 @@
-// API 서버 기본 주소
-const BASE_URL = "http://localhost:3000";
+// 백엔드에서 전체 맛집 목록과 찜한 맛집 목록을 가져오는 비동기 함수들
 
+import axios from "axios";
+import type { Place } from "../types/Place";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // 전체 맛집을 가져오는 함수
-export async function fetchPlaces() {
-  const response = await fetch(`${BASE_URL}/places`); // places 엔드포인트 호출
-  if (!response.ok) {
-    throw new Error("서버 응답 실패"); // 에러 처리
-  }
-  const data = await response.json(); // JSON 형태로 응답 받기
-  return data.places; // places만 추출해서 반환하기
+export async function fetchAllPlaces(): Promise<Place[]> {
+  const response = await axios.get(`${BASE_URL}/places`);
+  return response.data.places; // places 필드만 반환
+}
+// 찜한 맛집 목록 가져오기
+export async function fetchLikedPlaces(): Promise<Place[]> {
+  const response = await axios.get(`${BASE_URL}/users/places`);
+  return response.data.places;
 }

@@ -3,6 +3,7 @@ import type { Place } from "../types/Place";
 import Page from "./page";
 import Section from "./section";
 import RestaurantCard from "./restaurantCard";
+import { fetchAllPlaces, fetchLikedPlaces } from "../api/fetchPlaces";
 
 export default function PlaceList() {
   // 전체 맛집과 찜한 맛집 상태 저장
@@ -12,18 +13,11 @@ export default function PlaceList() {
 
   // 컴포넌트 마운트 시 API 호출
   useEffect(() => {
-    Promise.all([
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/places`).then((res) =>
-        res.json()
-      ),
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/users/places`).then((res) =>
-        res.json()
-      ),
-    ])
+    Promise.all([fetchAllPlaces(), fetchLikedPlaces()])
       .then(([allData, likedData]) => {
         // 받아온 데이터를 상태에 저장
-        setAllPlaces(allData.places);
-        setLikedPlaces(likedData.places);
+        setAllPlaces(allData);
+        setLikedPlaces(likedData);
       })
       .catch(console.error) // 에러 로그 출력
       .finally(() => setLoading(false)); // 로딩 완료
