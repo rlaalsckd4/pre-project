@@ -10,8 +10,10 @@ export default function PlaceList() {
   const [allPlaces, setAllPlaces] = useState<Place[]>([]);
   const [likedPlaces, setLikedPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true); // 로딩 상태
+  const [errorMsg, setErrorMsg] = useState(""); // 에러 메시지 상태
 
   // 컴포넌트 마운트 시 API 호출
+  // 두 개의 API 요청을 동시에 실행하고, 완료되면 상태에 반영
   useEffect(() => {
     Promise.all([fetchAllPlaces(), fetchLikedPlaces()])
       .then(([allData, likedData]) => {
@@ -19,11 +21,12 @@ export default function PlaceList() {
         setAllPlaces(allData);
         setLikedPlaces(likedData);
       })
-      .catch(console.error) // 에러 로그 출력
+      .catch((error: Error) => setErrorMsg(error.message)) // 에러 로그 출력
       .finally(() => setLoading(false)); // 로딩 완료
   }, []);
 
-  if (loading) return <p className="text-center">로딩 중...</p>;
+  if (loading)
+    return <p className="text-center">맛집을 불러오는 중입니다...</p>;
 
   return (
     <Page>
@@ -49,6 +52,11 @@ export default function PlaceList() {
           ))}
         </div>
       </Section>
+      {errorMsg && (
+        <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-center">
+          {errorMsg}
+        </p>
+      )}
     </Page>
   );
 }
