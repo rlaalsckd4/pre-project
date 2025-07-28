@@ -59,3 +59,25 @@ export async function fetchLikedPlaces(): Promise<Place[]> {
     throw new Error(message);
   }
 }
+
+// POST 요청 함수
+export async function likePlace(place: Place) {
+  try {
+    const response = await instance.post("/users/places", { place });
+    return response.data;
+  } catch (error) {
+    const message = handleApiError(error);
+    throw new Error(message);
+  }
+}
+
+// 찜 삭제 요청 (DELETE) 함수
+export async function unlikePlace(placeId: string) {
+  try {
+    const response = await instance.delete(`/users/places/${placeId}`);
+    return response.data;
+  } catch (error) {
+    const message = handleApiError(error);
+    throw new Error(message);
+  }
+}

@@ -50,18 +50,16 @@ export default function PlaceList() {
         setLoading(false);
       }
     );
-  });
+  }, []);
 
-  // useEffect(() => {
-  //   Promise.all([fetchAllPlaces(), fetchLikedPlaces()])
-  //     .then(([allData, likedData]) => {
-  //       // 받아온 데이터를 상태에 저장
-  //       setAllPlaces(allData);
-  //       setLikedPlaces(likedData);
-  //     })
-  //     .catch((error: Error) => setErrorMsg(error.message)) // 에러 로그 출력
-  //     .finally(() => setLoading(false)); // 로딩 완료
-  // }, []);
+  const handleLike = async () => {
+    try {
+      const updatedLiked = await fetchLikedPlaces();
+      setLikedPlaces(updatedLiked);
+    } catch (error: any) {
+      setErrorMsg(error.message || "찜 목록 갱신 실패");
+    }
+  };
 
   if (loading)
     return <p className="text-center">맛집을 불러오는 중입니다...</p>;
@@ -77,7 +75,12 @@ export default function PlaceList() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {likedPlaces.map((place) => (
-              <RestaurantCard key={place.id} place={place} />
+              <RestaurantCard
+                key={`liked-${place.id}`}
+                place={place}
+                isLiked={true}
+                onLikeUpdate={handleLike}
+              />
             ))}
           </div>
         )}
@@ -86,7 +89,12 @@ export default function PlaceList() {
       <Section title="🍽️ 전체 맛집 목록">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {allPlaces.map((place) => (
-            <RestaurantCard key={place.id} place={place} />
+            <RestaurantCard
+              key={`all-${place.id}`}
+              place={place}
+              isLiked={false}
+              onLikeUpdate={handleLike}
+            />
           ))}
         </div>
       </Section>
